@@ -1,5 +1,5 @@
 global:
-  scrape_interval: 180s
+  scrape_interval: 90s
   scrape_timeout: 10s
 
 rule_files:

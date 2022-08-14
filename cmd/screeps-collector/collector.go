@@ -28,6 +28,8 @@ func NewScreepsCollector(token string) *ScreepCollector {
 func (s *ScreepCollector) Describe(ch chan<- *prometheus.Desc) {}
 
 func (s *ScreepCollector) Collect(ch chan<- prometheus.Metric) {
+	fmt.Printf("Collecting metrics from Screeps\n")
+
 	req, err := http.NewRequest("GET", "https://screeps.com/api/user/memory?shard=shard2&path=metrics", nil)
 	req.Header.Add("X-Token", s.token)
 
@@ -44,16 +46,12 @@ func (s *ScreepCollector) Collect(ch chan<- prometheus.Metric) {
 		return
 	}
 
-	fmt.Printf("%s\n", body)
-
 	memory := memoryResponse{}
 	err = json.Unmarshal(body, &memory)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err)
 		return
 	}
-
-	fmt.Printf("%v\n", memory.Data[4:])
 
 	decoder := base64.NewDecoder(base64.StdEncoding, bytes.NewBuffer([]byte(memory.Data[3:])))
 	decoded, err := ioutil.ReadAll(decoder)
@@ -74,16 +72,12 @@ func (s *ScreepCollector) Collect(ch chan<- prometheus.Metric) {
 		return
 	}
 
-	fmt.Printf("%s\n", metricsRaw)
-
 	metrics := []metric{}
 	err = json.Unmarshal(metricsRaw, &metrics)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err)
 		return
 	}
-
-	fmt.Printf("%v\n", metrics)
 
 	for _, metric := range metrics {
 		valueType := prometheus.GaugeValue
