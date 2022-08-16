@@ -22,7 +22,7 @@ func main() {
 
 	// Create a new registry.
 	reg := prometheus.NewRegistry()
-	reg.MustRegister(NewScreepsCollector(token))
+	reg.MustRegister(NewScreepsScraper(token))
 
 	// Expose the registered metrics via HTTP.
 	http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))

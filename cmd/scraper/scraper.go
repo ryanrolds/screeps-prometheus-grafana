@@ -18,17 +18,17 @@ var (
 	client = &http.Client{}
 )
 
-type ScreepCollector struct {
+type ScreepScraper struct {
 	token string
 }
 
-func NewScreepsCollector(token string) *ScreepCollector {
-	return &ScreepCollector{token}
+func NewScreepsScraper(token string) *ScreepScraper {
+	return &ScreepScraper{token}
 }
 
-func (s *ScreepCollector) Describe(ch chan<- *prometheus.Desc) {}
+func (s *ScreepScraper) Describe(ch chan<- *prometheus.Desc) {}
 
-func (s *ScreepCollector) Collect(ch chan<- prometheus.Metric) {
+func (s *ScreepScraper) Collect(ch chan<- prometheus.Metric) {
 	fmt.Printf("Collecting metrics from Screeps\n")
 
 	// Fetch the metrics data from Shard2

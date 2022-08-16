@@ -2,30 +2,27 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    io.kompose.service: collector
-  name: poller
+    app: scraper
+  name: scraper
   namespace: screeps
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: collector
+      app: scraper
   strategy: {}
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert
-        kompose.version: 1.21.0 (992df58d8)
       labels:
-        io.kompose.service: collector
+        app: scraper
     spec:
       containers:
-      - name: collector
-        image: ${DOCKER_REPO}/screeps-collector:${TAG_NAME}
+      - name: scraper
+        image: ${DOCKER_REPO}/screeps-scraper:${TAG_NAME}
         imagePullPolicy: ""
         resources: {}
         envFrom:
         - secretRef:
-            name: collector-envvars
+            name: scraper-envvars
       imagePullSecrets:
         - name: regcred

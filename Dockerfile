@@ -4,6 +4,6 @@ WORKDIR /collector
 
 COPY . .
 
-RUN go build -o ./bin/screeps-collector ./cmd/screeps-collector
+RUN go build -o ./bin/scraper ./cmd/scraper
 
-CMD ["./bin/screeps-collector"]
+CMD ["./bin/scraper"]
