@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: collector
+  name: poller
+  namespace: screeps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: collector
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.21.0 (992df58d8)
+      labels:
+        io.kompose.service: collector
+    spec:
+      containers:
+      - name: collector
+        image: ${DOCKER_REPO}/screeps-collector:${TAG_NAME}
+        imagePullPolicy: ""
+        resources: {}
+        envFrom:
+        - secretRef:
+            name: collector-envvars
+      imagePullSecrets:
+        - name: regcred

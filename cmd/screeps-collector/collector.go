@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -30,6 +31,7 @@ func (s *ScreepCollector) Describe(ch chan<- *prometheus.Desc) {}
 func (s *ScreepCollector) Collect(ch chan<- prometheus.Metric) {
 	fmt.Printf("Collecting metrics from Screeps\n")
 
+	// Fetch the metrics data from Shard2
 	req, err := http.NewRequest("GET", "https://screeps.com/api/user/memory?shard=shard2&path=metrics", nil)
 	req.Header.Add("X-Token", s.token)
 
@@ -43,6 +45,45 @@ func (s *ScreepCollector) Collect(ch chan<- prometheus.Metric) {
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err)
+		return
+	}
+
+	// Report API rate limit
+	limitRaw := resp.Header.Get("X-Ratelimit-Remaining")
+	if limitRaw != "" {
+		limit, err := strconv.ParseFloat(limitRaw, 64)
+		if err != nil {
+			fmt.Printf("Error: %s\n", err)
+			return
+		}
+
+		ch <- prometheus.MustNewConstMetric(
+			prometheus.NewDesc("screeps_api_rate_limit_remaining", "Screeps API rate limit", nil, nil),
+			prometheus.GaugeValue,
+			limit,
+		)
+	}
+
+	// Report API rate limit reset
+	resetRaw := resp.Header.Get("Retry-After")
+	if resetRaw != "" {
+		reset, err := strconv.ParseFloat(resetRaw, 64)
+		if err != nil {
+			fmt.Printf("Error: %s\n", err)
+			return
+		}
+
+		ch <- prometheus.MustNewConstMetric(
+			prometheus.NewDesc("screeps_api_rate_limit_reset", "Screeps API rate limit reset", nil, nil),
+			prometheus.GaugeValue,
+			reset,
+		)
+	}
+
+	// Check if failed (rate limit?)
+	if resp.StatusCode != 200 {
+		fmt.Printf("Error: %d %s\n", resp.StatusCode, string(body))
+		fmt.Printf("%v\n", resp.Header)
 		return
 	}
 

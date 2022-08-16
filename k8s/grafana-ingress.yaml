@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: screeps
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod-registry
+spec:
+  rules:
+  - host: screeps.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: grafana
+          servicePort: 3000
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - screeps.example.com
+    secretName: grafana-ingress
