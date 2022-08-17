@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    io.kompose.service: grafana-data
+    app: grafana-data
   name: grafana-data
   namespace: screeps
 spec:

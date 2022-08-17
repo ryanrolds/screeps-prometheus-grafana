@@ -1,0 +1,13 @@
+servers:
+  - name: mmo
+    host: https://screeps.com
+    shards: 
+    - shard2
+    token: asdf
+  - name: k8s
+    host: http://screeps.pedanticorderliness.com:21025
+    shards:
+    - shard
+    username: ENETDOWN
+    password: asdf
+

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: prometheus-config
+  namespace: screeps
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 90s
+      scrape_timeout: 10s
+
+    rule_files:
+
+    scrape_configs:
+      - job_name: collector
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+            - 'scraper:8080'

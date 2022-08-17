@@ -1,6 +1,6 @@
 version: '3'
 
 tasks:
-  build-collector:
+  build-scraper:
     cmds:
-      - go build -o ./bin/screeps-collector ./cmd/screeps-collector/
+      - go build -o ./bin/scraper ./cmd/scraper/
