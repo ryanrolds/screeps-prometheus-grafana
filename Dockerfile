@@ -1,6 +1,6 @@
 FROM golang:1.18-alpine
 
-WORKDIR /collector
+WORKDIR /scraper
 
 COPY . .
 

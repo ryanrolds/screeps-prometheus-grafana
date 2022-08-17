@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 	"os"
 
@@ -15,12 +16,22 @@ type Servers struct {
 }
 
 type Server struct {
-	Name     string `yaml:"name"`
-	Host     string `yaml:"host"`
-	Path     string `yaml:"path"`
-	Token    string `yaml:"token"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
+	Name              string `yaml:"name"`
+	Host              string `yaml:"host"`
+	Path              string `yaml:"path"`
+	Shard             string `yaml:"shard"`
+	OverrideShardName string `yaml:"overrideShardName"`
+	Token             string `yaml:"token"`
+	Username          string `yaml:"username"`
+	Password          string `yaml:"password"`
+}
+
+func (s *Server) Validate() error {
+	if s.Token == "" && s.Username == "" && s.Password == "" {
+		return errors.New("No auth credentials provided")
+	}
+
+	return nil
 }
 
 func main() {
@@ -45,12 +56,35 @@ func main() {
 	// Create a new registry
 	reg := prometheus.NewRegistry()
 
-	// Scraper for MMO shards and seasonal events
-	mmoScraper := NewScreepsScraper().
-		//WithToken(token).
-		WithPath("metrics").
-		WithShards([]string{"shard2"})
-	reg.MustRegister(mmoScraper)
+	for _, server := range servers.Servers {
+		err = server.Validate()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		scraper := NewScreepsScraper().WithShard(server.Shard)
+
+		if server.Host != "" {
+			scraper.WithHost(server.Host)
+		}
+
+		if server.Path != "" {
+			scraper.WithPath(server.Path)
+		}
+
+		if server.Token != "" {
+			scraper.WithToken(server.Token)
+		} else if server.Username != "" && server.Password != "" {
+			scraper.WithUserPass(server.Username, server.Password)
+		}
+
+		if server.OverrideShardName != "" {
+			scraper.WithOverrideShardName(server.OverrideShardName)
+		}
+
+		log.Infof("Registering metrics from %s %s", server.Host, server.Shard)
+		reg.MustRegister(scraper)
+	}
 
 	// Expose the registered metrics via HTTP
 	http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))

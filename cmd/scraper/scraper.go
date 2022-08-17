@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
@@ -19,6 +20,11 @@ const (
 	authTypeToken    = "token"
 	authTypeUserPass = "userpass"
 )
+
+type authResponse struct {
+	Ok    int    `json:"ok"`
+	Token string `json:"token"`
+}
 
 type memoryResponse struct {
 	Ok   int    `json:"ok"`
@@ -35,9 +41,11 @@ type metric struct {
 
 type ScreepScraper struct {
 	host   string
-	shards []string
+	shard  string
 	path   string
 	client *http.Client
+
+	overrideShardName string
 
 	authType string
 	token    string
@@ -48,13 +56,22 @@ type ScreepScraper struct {
 func NewScreepsScraper() *ScreepScraper {
 	return &ScreepScraper{
 		host:   "https://screeps.com",
-		shards: []string{},
 		client: &http.Client{},
 	}
 }
 
 func (s *ScreepScraper) WithHost(host string) *ScreepScraper {
 	s.host = host
+	return s
+}
+
+func (s *ScreepScraper) WithShard(shard string) *ScreepScraper {
+	s.shard = shard
+	return s
+}
+
+func (s *ScreepScraper) WithOverrideShardName(overrideShardName string) *ScreepScraper {
+	s.overrideShardName = overrideShardName
 	return s
 }
 
@@ -76,11 +93,6 @@ func (s *ScreepScraper) WithUserPass(username, password string) *ScreepScraper {
 	return s
 }
 
-func (s *ScreepScraper) WithShards(shards []string) *ScreepScraper {
-	s.shards = shards
-	return s
-}
-
 func (s *ScreepScraper) WithClient(client *http.Client) *ScreepScraper {
 	s.client = client
 	return s
@@ -89,19 +101,62 @@ func (s *ScreepScraper) WithClient(client *http.Client) *ScreepScraper {
 func (s *ScreepScraper) Describe(ch chan<- *prometheus.Desc) {}
 
 func (s *ScreepScraper) Collect(ch chan<- prometheus.Metric) {
-	log.Info("Collecting metrics from Screeps")
 
-	shard := ""
-	if len(s.shards) > 0 {
-		shard = s.shards[0]
+	if s.authType == authTypeUserPass && s.token == "" {
+		// fetch token using username and password
+		authUrl := fmt.Sprintf("%s/api/auth/signin", s.host)
+		authLog := log.WithField("url", authUrl)
+
+		authLog.Info("Getting token")
+
+		reader := strings.NewReader(fmt.Sprintf(`{"email":"%s","password":"%s"}`, s.username, s.password))
+		req, err := http.NewRequest("POST", authUrl, reader)
+		req.Header.Add("Content-Type", "application/json")
+
+		resp, err := s.client.Do(req)
+		if err != nil {
+			log.Errorf("Error: %s", err)
+			return
+		}
+
+		defer resp.Body.Close()
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Errorf("Error: %s", err)
+			return
+		}
+
+		// Check if failed (rate limit?)
+		if resp.StatusCode != 200 {
+			log.Errorf("Error: %d %s", resp.StatusCode, string(body))
+			log.Errorf("%v", resp.Header)
+			return
+		}
+
+		var auth authResponse
+		err = json.Unmarshal(body, &auth)
+		if err != nil {
+			log.Errorf("Error: %s", err)
+			return
+		}
+
+		s.token = auth.Token
+		authLog.Info("Got token for username and password")
 	}
 
 	// Fetch the metrics data from Shard2
-	memoryUrl := fmt.Sprintf("%s/api/user/memory?shard=%s&path=%s", s.host, shard, s.path)
+	memoryUrl := fmt.Sprintf("%s/api/user/memory?shard=%s&path=%s", s.host, s.shard, s.path)
 	log := log.WithField("url", memoryUrl)
+
+	log.Info("Collecting metrics from Screeps")
 
 	req, err := http.NewRequest("GET", memoryUrl, nil)
 	req.Header.Add("X-Token", s.token)
+
+	// if we are getting a token from a user/pass auth, we need to include the username
+	if s.authType == authTypeUserPass {
+		req.Header.Add("X-Username", s.username)
+	}
 
 	resp, err := s.client.Do(req)
 	if err != nil {
@@ -155,6 +210,8 @@ func (s *ScreepScraper) Collect(ch chan<- prometheus.Metric) {
 		return
 	}
 
+	log.Info("Success")
+
 	memory := memoryResponse{}
 	err = json.Unmarshal(body, &memory)
 	if err != nil {
@@ -192,6 +249,11 @@ func (s *ScreepScraper) Collect(ch chan<- prometheus.Metric) {
 		valueType := prometheus.GaugeValue
 		if metric.Type == "counter" {
 			valueType = prometheus.CounterValue
+		}
+
+		// Override the shard name in the labels if it is set
+		if s.overrideShardName != "" {
+			metric.Labels["shard"] = s.overrideShardName
 		}
 
 		desc := prometheus.NewDesc(metric.Key, "", nil, metric.Labels)

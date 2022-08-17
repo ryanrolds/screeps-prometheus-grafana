@@ -3,9 +3,10 @@ version: "3"
 services:
   collector:
     build: .
-    env_file: .env
     ports:
       - "8080:8080"
+    volumes:
+      - ./config.yaml:/scraper/config.yaml
   prometheus:
     image: prom/prometheus:latest
     ports:

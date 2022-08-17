@@ -1,0 +1,15 @@
+servers:
+  - name: mmo
+    host: https://screeps.com
+    shards: shard0
+    path: metrics
+    # https://screeps.com/a/#!/account/auth-tokens
+    token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  - name: private
+    host: http://localhost:21025
+    shards: shard
+    overrideShardName: private
+    path: metrics
+    username: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    password: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+

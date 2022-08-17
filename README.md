@@ -2,8 +2,15 @@
 
 Prometheus collector for Screeps and Docker Compose services for Prometheus and Grafana.
 
-## Notes
+## Setup
 
-curl -X POST -H "Content-Type: application/json" -d '{"email":"...","password":"..."}' http://localhost:21025/api/auth/signin
-curl -H "X-Token: ..." http://localhost:21025/api/user/memory
-curl -H "X-Token: ..." -H "X-Username: ..." http://localhost:21025/api/user/memory
+1. Instrument Screeps bot and write metrics to `Memory.metrics`. See [example library](https://github.com/ryanrolds/screeps-bot/blob/605bcfc1fa7176a2f5b1699b72ceda17ca4eef87/src/lib/metrics.ts#L12) and [example usage](https://github.com/ryanrolds/screeps-bot/blob/605bcfc1fa7176a2f5b1699b72ceda17ca4eef87/src/main.ts#L151-L153).
+2. Copy `config.example.yaml` to `config.yaml` and edit as needed, token or username+password required
+
+## Running
+
+`docker-compose up`
+
+## Troubleshooting
+
+Check that the Scraper is getting metrics, `http://localhost:8080/metrics`.

@@ -124,7 +124,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "base_level_progress",
+          "expr": "base_level_progress{shard=\"$shard\"}",
           "legendFormat": "{{base}}",
           "range": true,
           "refId": "A"
@@ -214,7 +214,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "base_level",
+          "expr": "base_level{shard=\"$shard\"}",
           "legendFormat": "{{base}}",
           "range": true,
           "refId": "A"
@@ -306,7 +306,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "base_energy_stored",
+          "expr": "base_energy_stored{shard=\"$shard\"}",
           "legendFormat": "{{base}}",
           "range": true,
           "refId": "A"
@@ -398,7 +398,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "base_rooms_total",
+          "expr": "base_rooms_total{shard=\"$shard\"}",
           "legendFormat": "{{base}}",
           "range": true,
           "refId": "A"
@@ -512,7 +512,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "base_energy_available",
+          "expr": "base_energy_available{shard=\"$shard\"}",
           "legendFormat": "{{base}}",
           "range": true,
           "refId": "A"
@@ -523,7 +523,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "topic_length{topic=\"base_E59N42_distributor\"}",
+          "expr": "topic_length{topic=\"base_E59N42_distributor\",shard=\"$shard\"}",
           "hide": false,
           "legendFormat": "Topic Size",
           "range": true,
@@ -617,7 +617,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "base_desired_haulers_total",
+          "expr": "base_desired_haulers_total{shard=\"$shard\"}",
           "legendFormat": "Desired haulers",
           "range": true,
           "refId": "A"
@@ -628,7 +628,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "creeps_role_total{role=\"hauler\"}",
+          "expr": "creeps_role_total{role=\"hauler\", shard=\"$shard\"}",
           "hide": false,
           "legendFormat": "Current Haulers",
           "range": true,
@@ -640,7 +640,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "topic_length{topic=\"base_E59N42_hauler\"}",
+          "expr": "topic_length{topic=\"base_E59N42_hauler\",shard=\"$shard\"}",
           "hide": false,
           "legendFormat": "Haul Topic",
           "range": true,
@@ -771,7 +771,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "creeps_role_total",
+          "expr": "creeps_role_total{shard=\"$shard\"}",
           "legendFormat": "{{role}}",
           "range": true,
           "refId": "A"
@@ -861,7 +861,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "creeps_base_total",
+          "expr": "creeps_base_total{shard=\"$shard\"}",
           "legendFormat": "{{base}}",
           "range": true,
           "refId": "A"
@@ -963,7 +963,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "increase(scheduler_cpu_time_total[5m])",
+          "expr": "increase(scheduler_cpu_time_total{shard=\"$shard\"}[5m])",
           "legendFormat": "{{process_type}}",
           "range": true,
           "refId": "A"
@@ -1055,7 +1055,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "increase(scheduler_processes_running_total[5m])",
+          "expr": "increase(scheduler_processes_running_total{shard=\"$shard\"}[5m])",
           "legendFormat": "{{process_type}}",
           "range": true,
           "refId": "A"
@@ -1146,7 +1146,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "increase(scheduler_processes_terminated_total[5m])",
+          "expr": "increase(scheduler_processes_terminated_total{shard=\"$shard\"}[5m])",
           "legendFormat": "{{process_type}}",
           "range": true,
           "refId": "A"
@@ -1238,7 +1238,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "increase(scheduler_processes_sleeping_total[5m])",
+          "expr": "increase(scheduler_processes_sleeping_total{shard=\"$shard\"}[5m])",
           "legendFormat": "{{process_type}}",
           "range": true,
           "refId": "A"
@@ -1343,7 +1343,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "increase(cpu_used_total[5m]) / increase(time[5m]) ",
+          "expr": "increase(cpu_used_total{shard=\"$shard\"}[5m]) / increase(time{shard=\"$shard\"}[5m]) ",
           "legendFormat": "{{shard}}",
           "range": true,
           "refId": "A"
@@ -1434,7 +1434,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "1 / rate(time[5m])",
+          "expr": "1 / rate(time{shard=\"$shard\"}[5m])",
           "hide": false,
           "legendFormat": "{{shard}}",
           "range": true,
@@ -1524,7 +1524,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "increase(cpu_used_total[5m])",
+          "expr": "increase(cpu_used_total{shard=\"$shard\"}[5m])",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -1616,7 +1616,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "increase(time[5m])",
+          "expr": "increase(time{shard=\"$shard\"}[5m])",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -1718,7 +1718,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "topic_length",
+          "expr": "topic_length{shard=\"$shard\"}",
           "legendFormat": "{{topic}}",
           "range": true,
           "refId": "A"
@@ -1824,7 +1824,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "screeps_api_rate_limit_remaining",
+          "expr": "screeps_api_rate_limit_remaining{shard=\"$shard\"}",
           "legendFormat": "Remaining",
           "range": true,
           "refId": "A"
@@ -1835,7 +1835,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "screeps_api_rate_limit_reset",
+          "expr": "screeps_api_rate_limit_reset{shard=\"$shard\"}",
           "hide": false,
           "legendFormat": "Reset TTL",
           "range": true,
@@ -1851,7 +1851,34 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "shard2",
+          "value": "shard2"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(time, shard)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "shard",
+        "options": [],
+        "query": {
+          "query": "label_values(time, shard)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
   },
   "time": {
     "from": "now-6h",
@@ -1861,6 +1888,6 @@
   "timezone": "",
   "title": "New dashboard",
   "uid": "jY51UJm4z",
-  "version": 29,
+  "version": 33,
   "weekStart": ""
 }
