@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scraper-config
+  namespace: screeps
+data:
+  config.yaml: |
+    servers:
+    - name: mmo
+      shard: shard2
+      path: metrics
+      # https://screeps.com/a/#!/account/auth-tokens
+      token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    - name: k8s
+      host: http://localhost:21025
+      shard: shard
+      overrideShardName: private
+      path: metrics
+      username: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      password: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

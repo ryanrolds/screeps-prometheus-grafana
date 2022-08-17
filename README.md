@@ -11,6 +11,8 @@ Prometheus collector for Screeps and Docker Compose services for Prometheus and 
 
 `docker-compose up`
 
+Visit: http://localhost:3000/, login with admin/admin, then import `grafana/dashboard.json`.
+
 ## Troubleshooting
 
 Check that the Scraper is getting metrics, `http://localhost:8080/metrics`.

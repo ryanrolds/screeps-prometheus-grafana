@@ -19,10 +19,13 @@ spec:
       containers:
       - name: scraper
         image: ${DOCKER_REPO}/screeps-scraper:${TAG_NAME}
-        imagePullPolicy: ""
-        resources: {}
-        envFrom:
-        - secretRef:
-            name: scraper-envvars
+        volumeMounts:
+        - name: scraper-config
+          mountPath: /scraper/config.yaml
+          subPath: config.yaml
       imagePullSecrets:
         - name: regcred
+      volumes:
+      - name: scraper-config
+        configMap:
+          name: scraper-config

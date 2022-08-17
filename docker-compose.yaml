@@ -8,15 +8,14 @@ services:
     volumes:
       - ./config.yaml:/scraper/config.yaml
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.38.0
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:9.1.0
     volumes:
-      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
       - ./grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
     ports:
       - 3000:3000

@@ -47,10 +47,11 @@ type ScreepScraper struct {
 
 	overrideShardName string
 
-	authType string
-	token    string
-	username string
-	password string
+	authType       string
+	token          string
+	tokenUpdatedAt int64
+	username       string
+	password       string
 }
 
 func NewScreepsScraper() *ScreepScraper {
@@ -101,7 +102,7 @@ func (s *ScreepScraper) WithClient(client *http.Client) *ScreepScraper {
 func (s *ScreepScraper) Describe(ch chan<- *prometheus.Desc) {}
 
 func (s *ScreepScraper) Collect(ch chan<- prometheus.Metric) {
-
+	// check if user/pass auth type and if token has been fetched
 	if s.authType == authTypeUserPass && s.token == "" {
 		// fetch token using username and password
 		authUrl := fmt.Sprintf("%s/api/auth/signin", s.host)
@@ -204,7 +205,21 @@ func (s *ScreepScraper) Collect(ch chan<- prometheus.Metric) {
 	}
 
 	// Check if failed (rate limit?)
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
+		if resp.StatusCode == http.StatusUnauthorized {
+			// clear token so it reauths next time
+			// private server tokens are only good for 60 seconds :(
+			log.Warn("Token invalid, clearing")
+			s.token = ""
+			return
+		}
+
+		if resp.StatusCode == 429 {
+			log.Errorf("Error: %d %s", resp.StatusCode, string(body))
+			log.Errorf("%v", resp.Header)
+			return
+		}
+
 		log.Errorf("Error: %d %s", resp.StatusCode, string(body))
 		log.Errorf("%v", resp.Header)
 		return
